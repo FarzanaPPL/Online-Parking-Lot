@@ -1,0 +1,6 @@
+.footerC{
+    background-color: rgb(235, 235, 73);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
