@@ -1,55 +1,33 @@
 import {RxCross2} from 'react-icons/rx'
 import {FaEdit} from 'react-icons/fa'
-import {useContext,useState} from 'react'
-import availableSlotsContext from '../../availableSlotsContext'
-import allottedSlotsContext from '../../allottedSlotsContext'
-import './index.css'
-const Body=props=>{
-    const {carDetails,onDeleteRow}=props
-    const {id,ownerName,registrationNumber,color,slotNumber} = carDetails
-    const {output,setOutput}=useContext(availableSlotsContext)
-    const {alottedSlot,setAllottedSlot}=useContext(allottedSlotsContext)
-    const [editable,setEditable]=useState(false)
-    // const [render,setRender]=useState(true)
+import searchContext from '../../searchContext'
+import { useContext } from 'react'
 
+const Body=(props)=>{
+    const {carDetails,index, onDeleteRow}=props 
+    const {id,slotNumber,registrationNumber,ownerName,color}=carDetails
+    const {output,setOutput,alottedSlot,setAllottedSlot,data,setBolin,setIndex,setInputData}=useContext(searchContext)
     const deleteRow=()=>{
-            onDeleteRow(id)
-       setOutput(output+1)
+        onDeleteRow(id)
         setAllottedSlot(alottedSlot-1)
+        setOutput(parseInt(output)+1)
     }
-
-    const onEditText=()=>{
-        setEditable(true)
-    }
-
-    const renderTableData=()=>{
-        // if(output<=0 && output>=20){
-        //     setRender(false)
-        //     console.log("output",parseInt(output))
-        // }
-    
-        // console.log("output",output)
-        return(
-        <table className='table'>
-            <tbody>
-            <tr className='tableRow'>
-                <td className='tableData' contentEditable={editable} align='center'>{slotNumber}</td>
-                <td className='tableData' contentEditable={editable} align='center'>{registrationNumber}</td>
-                <td className='tableData' contentEditable={editable} align='center'>{ownerName}</td>
-                <td className='tableData' contentEditable={editable} align='center'>{color}</td>
-                <td className='tableData' contentEditable={editable} align='center'><button onClick={deleteRow} className="crossButton"><RxCross2 /></button> <button onClick={onEditText} className="editButton"><FaEdit /></button></td>
-            </tr>
-            </tbody>
-        </table>
-        )
-    }
-
-
-    return(-
-        <div>
-
-            {renderTableData()}
-        </div>
+    const handleEdit=(i)=>{
+    let {ownerName,registrationNumber,color,slotNumber}=data[i]
+    setInputData({ownerName,registrationNumber,color,slotNumber})
+    setBolin(true)
+    setIndex(i)
+}
+    return(
+        <>
+    <tr className='tr'>
+            <td className='tableData'>{slotNumber}</td>
+                <td className='tableData'>{registrationNumber}</td>
+                <td  className='tableData'>{ownerName}</td>
+                <td className='tableData'>{color}</td>
+                <td className='tableData'><button className="crossButton" onClick={deleteRow}><RxCross2 /></button> <button className="editButton" onClick={()=>handleEdit(index)} ><FaEdit /></button></td>
+        </tr>
+    </>
     )
 }
 

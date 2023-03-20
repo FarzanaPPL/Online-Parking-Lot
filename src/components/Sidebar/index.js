@@ -1,45 +1,48 @@
 import {useState,useContext} from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import Body from '../Body'
 import searchContext from '../../searchContext'
-import availableSlotsContext from '../../availableSlotsContext'
-import allottedSlotsContext from '../../allottedSlotsContext'
+import Body from '../Body'
 import './index.css'
 
 const Sidebar=()=>{
-    const [ownerName,setOwnerName]=useState('')
-    const [registrationNumber,setRegistrationNumber]=useState('')
-    const [color,setColor]=useState('')
-    const [slotNumber,setSlotNumber]=useState('')
-    const [data,setData]=useState([])
-    // const [submitted, setSubmitted] = useState(false);
+    const {inputData,setInputData,data,setData,searchInput,output,setOutput,alottedSlot,setAllottedSlot,bolin, setBolin,index}=useContext(searchContext)
+    let {ownerName,registrationNumber,color,slotNumber}=inputData
     const [generateSlot,setGenerateSlot]=useState('')
-    const {output,setOutput}=useContext(availableSlotsContext)
-    const {alottedSlot,setAllottedSlot}=useContext(allottedSlotsContext)
-    const {searchInput}=useContext(searchContext)
-    const [errorMsg,setErrorMsg]=useState('')
+    const [errorMsg,setErrorMsg]=useState(false)
+    const [slotError,setSlotError]=useState('')
+    const [slotE,setSlotE]=useState(false)
+    const [errorName,setErrorName]=useState(false)
+    const [errorColor,setErrorColor]=useState(false)
+    const [errorSlotNum,setErrorSlotNum]=useState(false)
+    const [existRegNum,setExistRegNum]=useState(false)
+    const [existSlot,setExistSlot]=useState(false)
 
     const onSubmitAlotSlot=event=>{
         event.preventDefault()
-        console.log(data)
-       const newData={
-        id:uuidv4(),
-        ownerName,
-        registrationNumber,
-        color,
-        slotNumber
+       if(output>0){
+        const newData={
+            id:uuidv4(),
+            ownerName,
+            registrationNumber,
+            color,
+            slotNumber
+           }
+           if(ownerName===''&&registrationNumber===''&&color===''&&slotNumber===''){
+            alert("Enter all the fields ")
+           }else{
+            setData((prev)=>[...prev,newData])
+            setInputData({ownerName:'',registrationNumber:'',color:'',slotNumber:''})
+            setOutput(output-1)
+            setAllottedSlot(alottedSlot+1)
+            setSlotE(false)
+           }
+       }else{
+        setSlotE(true)
+        setSlotError('Enter available slots')
        }
-       if(ownerName!=='' && (registrationNumber.slice(0,2)==='TS'|| registrationNumber.slice(0,2)==='AP')){
         
-       }
-       setData([...data,newData])
-       setOwnerName('')
-       setRegistrationNumber('')
-       setColor('')
-       setSlotNumber('')
-        setAllottedSlot(alottedSlot+1)
-       setOutput(output-1)
     }
+
     const onSubmitGenerateSlots=event=>{
         setOutput((previousOutput)=>{
             const newVal=previousOutput?`${parseInt(previousOutput)+parseInt(generateSlot)}`:generateSlot
@@ -50,64 +53,134 @@ const Sidebar=()=>{
     }
 
     const onChangeOwnerName=event=>{
-        setOwnerName(event.target.value)
-    }
-    const onChangeRegistrationNumber=event=>{
-        const newNumber=event.target.value 
-        setRegistrationNumber(newNumber)
-        const regex=/^[a-zA-Z]{2}/
-        const checkRegistrationNumber=regex.test(newNumber)
-        if(!checkRegistrationNumber){
-            setErrorMsg('First two charecters must be alphabets')
+        setInputData({...inputData,ownerName:event.target.value})
+        const newName=event.target.value 
+        const regex=/^[a-zA-Z]+\s/
+        const checkOwnerName=regex.test(newName)
+        if(!checkOwnerName){
+            setErrorName(true)
         }else{
-            setErrorMsg('')
+            setErrorName(false)
         }
     }
+    const onChangeRegistrationNumber=(event)=>{
+        const newNumber=event.target.value 
+        setInputData({...inputData,registrationNumber:newNumber})
+        const regex=/^[A-Z]{2}[0-9]{2}[-][A-Za-z0-9]{2}[-][0-9]{4}/
+        const checkRegistrationNumber=regex.test(newNumber)
+        console.log('data',data)
+        // const check=data.map(each=>each.registrationNumber===newNumber)
+        // if(check){
+        //     setExistRegNum(true)
+        // }else{
+        //     setExistRegNum(false)
+        // }
+        const check=data.some((each)=>each.registrationNumber===newNumber)
+       if(check){
+        setExistRegNum('already exists')
+       }else{
+        setExistRegNum('')
+       }
+        
+        if(!checkRegistrationNumber){
+            setErrorMsg(true)    
+        }else{
+            setErrorMsg(false)
+        } 
+    }
     const onChangeColor=event=>{
-        setColor(event.target.value)
+        setInputData({...inputData,color:event.target.value})
+        const newColor=event.target.value 
+        const regex=/^[a-zA-Z]*$/
+        const checkOwnerName=regex.test(newColor)
+        if(!checkOwnerName){
+            setErrorColor(true)
+        }else{
+            setErrorColor(false)
+        }
     }
     const onChangeSlotNumber=event=>{
-        setSlotNumber(event.target.value)
+        setInputData({...inputData,slotNumber:event.target.value})
+        const newSlotNum=event.target.value 
+        const regex=/^[0-9]*$/
+        const checkOwnerName=regex.test(newSlotNum)
+        console.log('data',data)
+        const check=data.some((each)=>each.slotNumber===newSlotNum)
+       if(check){
+        setExistSlot('already exists')
+       }else{
+        setExistSlot('')
+       }
+        
+        if(!checkOwnerName){
+            setErrorSlotNum(true)
+        }else{
+            setErrorSlotNum(false)
+        }
     }
     const onChangeSlots=event=>{
         setGenerateSlot(event.target.value)  
     }
 
-    const onDeleteRow=id=>{
-        const filData=data.filter(i=>i.id!==id)
+    const onDeleteRow=(id)=>{
+        const filData=data.filter((v)=>v.id!==id)
         setData(filData)
-    }
+}
 
-    const filteredData=data.filter(each=>each.ownerName.toLowerCase().includes(searchInput)||each.registrationNumber.toLowerCase().includes(searchInput)||each.color.toLowerCase().includes(searchInput)||each.slotNumber.toLowerCase().includes(searchInput))
-   
-    return(
+const onUpdateAlotSlot=(event)=>{
+    event.preventDefault()
+    let total=[...data]
+  total.splice(index,1,{ownerName,registrationNumber,color,slotNumber})
+  setData(total)
+   setBolin(false)
+setInputData({ownerName:'',registrationNumber:'',color:'',slotNumber:''})
+}
+
+const filteredData=data.filter(each=>each.ownerName.toLowerCase().includes(searchInput)||each.registrationNumber.toLowerCase().includes(searchInput)||each.color.toLowerCase().includes(searchInput)||each.slotNumber.includes(searchInput))
+// const dupData=filteredData.filter(element=>{
+//     const unique=filteredData.includes(element.id)
+//     if(!unique){
+//         filteredData.push(element.id)
+//         setExistRegNum(false)
+//     }
+//     setExistRegNum(true)
+// })
+
+return(
         <div className='appContainer'>
             <div className='sidebarC'>
-    <form onSubmit={onSubmitAlotSlot}>
+        <form onSubmit={!bolin?onSubmitAlotSlot:onUpdateAlotSlot}>
     <div className="inputsC">
-        <input type="text" required className='sideInput' placeholder="Owner_Name" onChange={onChangeOwnerName} value={ownerName} />
-        <input type="text" required className='sideInput' placeholder="Registration_Number" onChange={onChangeRegistrationNumber} value={registrationNumber} />
-        <p className='error'>{errorMsg}</p>
-        <input type="text" required className='sideInput' placeholder="car/Bike_Color" onChange={onChangeColor} value={color} />
-        <input type="text" required className='sideInput' placeholder="Slot_Number" onChange={onChangeSlotNumber} value={slotNumber} /> 
+        <input type="text" required className='sideInput' name="ownerName" placeholder="Owner_Name" onChange={onChangeOwnerName} value={inputData.ownerName} autoComplete='off'  />
+        {errorName?<p className='error'>Enter the name in alphabets only</p>:''}
+        <input type="text" required className='sideInput' name="registrationNumber" placeholder="Registration_Number" onChange={onChangeRegistrationNumber} value={inputData.registrationNumber} autoComplete='off'  />
+        {errorMsg?<p className='error'>The format should be TS33-AA-0001</p>:''}
+        {existRegNum&&<p className='error'>Alreeady Exists</p>}
+        <input type="text" required className='sideInput' name="color" placeholder="car/Bike_Color" onChange={onChangeColor} value={inputData.color} autoComplete='off'  />
+        {errorColor?<p className='error'>Enter the color in alphabets only</p>:''}
+        <input type="text" required className='sideInput' name="slotNumber" placeholder="Slot_Number" onChange={onChangeSlotNumber} value={inputData.slotNumber} autoComplete='off'  /> 
+        {errorSlotNum?<p className='error'>Enter the slots in numbers only</p>:''}
+        {existSlot&&<p className='error'>Alreeady Exists</p>}
     </div>
-    <button className='alotSlotButton' onClick={onSubmitAlotSlot}>Alot the slot</button>
+    <button className='alotSlotButton'>{!bolin?`Alot Slot`:`Update data`}</button>
     </form>
     <div className='formC'>
     <div>
-        <label>Generate Slots:
+        <label className='labelT'>Generate Slots:
         <input type="text" className='generateInput' onChange={onChangeSlots} value={generateSlot}  />
         </label>
         <button className="generateButton" onClick={onSubmitGenerateSlots}>Generate</button>
     </div>
-    {output?<p>{`Available Slots:${output}`}</p>:<p>Available Slots:0</p>}
+    {output?<p className='availableSlots'>{`Available Slots: ${output}`}</p>:<p className='availableSlots'>{`Available Slots: 0`}</p>}
     
-    <p>Alotted Slots:{alottedSlot}</p>
+    <p className='alottedSlots'>{`Alotted Slots: ${alottedSlot}`}</p>
     </div>
     </div>
-    <table className='tableC'>
+    <div className='tableDiv'>
+    <table className="tableC" >
     <thead>
-            <tr className='tableRow'>
+            <tr className='tr'>
+                   
                 <th className='tableD'>SL_Num</th>
                 <th className='tableD'>Registration_Number</th>
                 <th className='tableD'>Owner_Name</th>
@@ -115,16 +188,20 @@ const Sidebar=()=>{
                 <th className='tableD'>Remove/Update</th>
             </tr>
             </thead>
-            <ul>
-    {data.length===0?data.map((each)=>(
-        <Body key={each.id} carDetails={each} onDeleteRow={onDeleteRow} errorMsg={errorMsg}  />
-    )):filteredData.map((each)=>(
-        <Body key={each.id} carDetails={each} onDeleteRow={onDeleteRow} errorMsg={errorMsg} />
+            <tbody>
+                {filteredData.map((each,index)=>(
+        <Body key={each.id} carDetails={each} index={index} onDeleteRow={onDeleteRow} errorMsg={errorMsg} />
+        
     ))}
-    </ul>
+    </tbody>
     </table>
+    {slotE?<p className='slotError'>{slotError}</p>:''}
+        </div>
         </div>
     )
 }
+
+
+
 
 export default Sidebar
