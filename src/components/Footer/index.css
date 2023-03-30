@@ -1,5 +1,5 @@
 .footerC{
-    background-color: rgb(235, 235, 73);
+    background-color: var(--mainColor);
     display: flex;
     justify-content: center;
     align-items: center;

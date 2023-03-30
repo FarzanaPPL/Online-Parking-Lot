@@ -1,9 +1,10 @@
 .headerC{
-    background-color: rgba(245, 245, 43, 0.678);
+    background-color: var(--mainColor);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding:15px;
+    width:100vw;
 }
 .logoContainer{
     display: flex;
@@ -12,7 +13,7 @@
     height: 50px;
 }
 .logoName{
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily);
     font-size: 26px;
 }
 .searchInput{
@@ -25,3 +26,8 @@
     padding:5px;
     border-radius: 8px;
 }
+/* @media (max-width:876px){
+    .headerC{
+        width:100vw;
+    }
+} */

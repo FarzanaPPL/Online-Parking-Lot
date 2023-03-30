@@ -22,8 +22,8 @@ const Body=(props)=>{
         <>
     <tr className='tr'>
             <td className='tableData'>{slotNumber}</td>
-                <td className='tableData'>{registrationNumber}</td>
-                <td  className='tableData'>{ownerName}</td>
+                <td className='tableData'>{registrationNumber.toUpperCase()}</td>
+                <td  className='tableData'>{ownerName.trim()}</td>
                 <td className='tableData'>{color}</td>
                 <td className='tableData'><button className="crossButton" onClick={deleteRow}><RxCross2 /></button> <button className="editButton" onClick={()=>handleEdit(index)} ><FaEdit /></button></td>
         </tr>

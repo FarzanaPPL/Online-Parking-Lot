@@ -4,49 +4,60 @@ import searchContext from '../../searchContext'
 import Body from '../Body'
 import './index.css'
 
+let errorName=false
+let existRegNum=false
+let existSlot=false
+let error={ownerName:'',registrationNumber:'',color:'',slotNumber:''}
+
+
 const Sidebar=()=>{
     const {inputData,setInputData,data,setData,searchInput,output,setOutput,alottedSlot,setAllottedSlot,bolin, setBolin,index}=useContext(searchContext)
     let {ownerName,registrationNumber,color,slotNumber}=inputData
     const [generateSlot,setGenerateSlot]=useState('')
-    const [errorMsg,setErrorMsg]=useState(false)
     const [slotError,setSlotError]=useState('')
-    const [slotE,setSlotE]=useState(false)
-    const [errorName,setErrorName]=useState(false)
-    const [errorColor,setErrorColor]=useState(false)
-    const [errorSlotNum,setErrorSlotNum]=useState(false)
-    const [existRegNum,setExistRegNum]=useState(false)
-    const [existSlot,setExistSlot]=useState(false)
+    const [errorData,setErrorData]=useState(false)
 
     const onSubmitAlotSlot=event=>{
         event.preventDefault()
-       if(output>0){
-        const newData={
-            id:uuidv4(),
-            ownerName,
-            registrationNumber,
-            color,
-            slotNumber
-           }
-           if(ownerName===''&&registrationNumber===''&&color===''&&slotNumber===''){
-            alert("Enter all the fields ")
+        if(output>0){
+            if(error.ownerName===''&&error.registrationNumber===''&&error.color===''&&error.slotNumber===''){
+                
+                const newData={
+                    id:uuidv4(),
+                    ownerName,
+                    registrationNumber,
+                    color,
+                    slotNumber
+                   }
+                   if(ownerName===''&&registrationNumber===''&&color===''&&slotNumber===''){
+                    alert("Enter all the fields ")
+                   }
+                   else{
+                    console.log('formData',true)
+                    setData((prev)=>[...prev,newData])
+                    setInputData({ownerName:'',registrationNumber:'',color:'',slotNumber:''})
+                    setOutput(output-1)
+                    setAllottedSlot(alottedSlot+1)
+                    setSlotError(false)
+                    setErrorData(false)
+                    
+                       
+                   }
+                
+            }else{
+                setErrorData(true)
+            }
            }else{
-            setData((prev)=>[...prev,newData])
-            setInputData({ownerName:'',registrationNumber:'',color:'',slotNumber:''})
-            setOutput(output-1)
-            setAllottedSlot(alottedSlot+1)
-            setSlotE(false)
+             setSlotError(true)
+             
            }
-       }else{
-        setSlotE(true)
-        setSlotError('Enter available slots')
-       }
-        
     }
 
     const onSubmitGenerateSlots=event=>{
         setOutput((previousOutput)=>{
             const newVal=previousOutput?`${parseInt(previousOutput)+parseInt(generateSlot)}`:generateSlot
             setGenerateSlot('')
+            setSlotError(false)
              return newVal
         })
         
@@ -55,67 +66,68 @@ const Sidebar=()=>{
     const onChangeOwnerName=event=>{
         setInputData({...inputData,ownerName:event.target.value})
         const newName=event.target.value 
-        const regex=/^[a-zA-Z]+\s/
+        const regex=/^[a-zA-Z ]+$/ 
         const checkOwnerName=regex.test(newName)
+        
         if(!checkOwnerName){
-            setErrorName(true)
-        }else{
-            setErrorName(false)
+            error.ownerName='Enter the name'
+        }
+        else{
+            error.ownerName=''
         }
     }
     const onChangeRegistrationNumber=(event)=>{
         const newNumber=event.target.value 
         setInputData({...inputData,registrationNumber:newNumber})
-        const regex=/^[A-Z]{2}[0-9]{2}[-][A-Za-z0-9]{2}[-][0-9]{4}/
+        const regex=/^[a-zA-Z ]{2}[0-9]{2}[-][A-Za-z0-9]{2}[-][0-9]{4}/
         const checkRegistrationNumber=regex.test(newNumber)
-        console.log('data',data)
-        // const check=data.map(each=>each.registrationNumber===newNumber)
-        // if(check){
-        //     setExistRegNum(true)
-        // }else{
-        //     setExistRegNum(false)
-        // }
-        const check=data.some((each)=>each.registrationNumber===newNumber)
-       if(check){
-        setExistRegNum('already exists')
-       }else{
-        setExistRegNum('')
-       }
         
         if(!checkRegistrationNumber){
-            setErrorMsg(true)    
+            error.registrationNumber="The format should be TS33-AA-0001"  
         }else{
-            setErrorMsg(false)
+            error.registrationNumber=""
         } 
+
+        const check=data.some((each)=>each.registrationNumber.toLowerCase()===newNumber.toLowerCase())
+       if(check){
+        existRegNum=true
+       }else{
+        existRegNum=false
+       }
     }
     const onChangeColor=event=>{
         setInputData({...inputData,color:event.target.value})
         const newColor=event.target.value 
         const regex=/^[a-zA-Z]*$/
-        const checkOwnerName=regex.test(newColor)
-        if(!checkOwnerName){
-            setErrorColor(true)
+        const checkColor=regex.test(newColor)
+
+        if(!checkColor){
+            error.color="Enter the color"
+            
         }else{
-            setErrorColor(false)
+            error.color=""
+            
         }
     }
     const onChangeSlotNumber=event=>{
         setInputData({...inputData,slotNumber:event.target.value})
         const newSlotNum=event.target.value 
         const regex=/^[0-9]*$/
-        const checkOwnerName=regex.test(newSlotNum)
+        const checkSlotNumber=regex.test(newSlotNum)
         console.log('data',data)
         const check=data.some((each)=>each.slotNumber===newSlotNum)
        if(check){
-        setExistSlot('already exists')
+        existSlot=true
        }else{
-        setExistSlot('')
+        existSlot=false
        }
         
-        if(!checkOwnerName){
-            setErrorSlotNum(true)
+        if(!checkSlotNumber){
+            error.slotNumber="Enter the slotNUmber"
+            
         }else{
-            setErrorSlotNum(false)
+            error.slotNumber=""
+            
         }
     }
     const onChangeSlots=event=>{
@@ -137,14 +149,6 @@ setInputData({ownerName:'',registrationNumber:'',color:'',slotNumber:''})
 }
 
 const filteredData=data.filter(each=>each.ownerName.toLowerCase().includes(searchInput)||each.registrationNumber.toLowerCase().includes(searchInput)||each.color.toLowerCase().includes(searchInput)||each.slotNumber.includes(searchInput))
-// const dupData=filteredData.filter(element=>{
-//     const unique=filteredData.includes(element.id)
-//     if(!unique){
-//         filteredData.push(element.id)
-//         setExistRegNum(false)
-//     }
-//     setExistRegNum(true)
-// })
 
 return(
         <div className='appContainer'>
@@ -152,15 +156,15 @@ return(
         <form onSubmit={!bolin?onSubmitAlotSlot:onUpdateAlotSlot}>
     <div className="inputsC">
         <input type="text" required className='sideInput' name="ownerName" placeholder="Owner_Name" onChange={onChangeOwnerName} value={inputData.ownerName} autoComplete='off'  />
-        {errorName?<p className='error'>Enter the name in alphabets only</p>:''}
+        {error.ownerName&&<p className='error'>{error.ownerName}</p>}
         <input type="text" required className='sideInput' name="registrationNumber" placeholder="Registration_Number" onChange={onChangeRegistrationNumber} value={inputData.registrationNumber} autoComplete='off'  />
-        {errorMsg?<p className='error'>The format should be TS33-AA-0001</p>:''}
-        {existRegNum&&<p className='error'>Alreeady Exists</p>}
+        {error.registrationNumber&&<p className='error'>{error.registrationNumber}</p>}
+        {existRegNum?<p className='error'>Alreeady Exists</p>:''}
         <input type="text" required className='sideInput' name="color" placeholder="car/Bike_Color" onChange={onChangeColor} value={inputData.color} autoComplete='off'  />
-        {errorColor?<p className='error'>Enter the color in alphabets only</p>:''}
+        {error.color&&<p className='error'>{error.color}</p>}
         <input type="text" required className='sideInput' name="slotNumber" placeholder="Slot_Number" onChange={onChangeSlotNumber} value={inputData.slotNumber} autoComplete='off'  /> 
-        {errorSlotNum?<p className='error'>Enter the slots in numbers only</p>:''}
-        {existSlot&&<p className='error'>Alreeady Exists</p>}
+        {error.slotNumber&&<p className='error'>{error.slotNumber}</p>}
+        {existSlot?<p className='error'>Alreeady Exists</p>:''}
     </div>
     <button className='alotSlotButton'>{!bolin?`Alot Slot`:`Update data`}</button>
     </form>
@@ -190,12 +194,13 @@ return(
             </thead>
             <tbody>
                 {filteredData.map((each,index)=>(
-        <Body key={each.id} carDetails={each} index={index} onDeleteRow={onDeleteRow} errorMsg={errorMsg} />
+        <Body key={each.id} carDetails={each} index={index} onDeleteRow={onDeleteRow}  />
         
     ))}
     </tbody>
     </table>
-    {slotE?<p className='slotError'>{slotError}</p>:''}
+    {slotError?<p className='slotError'>Slots Not Available</p>:''}
+    {errorData?<p className='slotError'>Enter the proper data</p>:''}
         </div>
         </div>
     )

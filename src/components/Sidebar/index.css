@@ -1,6 +1,5 @@
 .appContainer{
     display: flex;
-    opacity: 1;
 }
 .sidebarC{
     display: flex;
@@ -12,11 +11,11 @@
 .sideInput{
     margin-bottom: 20px;
     border-width:0px;
-    border-bottom:2px solid rgb(235, 235, 73);
+    border-bottom:2px solid var(--mainColor);
     outline: none;
 }
 .alotSlotButton{
-    background-color: rgb(235, 235, 73);
+    background-color: var(--mainColor);
     margin-bottom: 25px;
     border-width: 0px;
     border-radius: 8px;
@@ -24,13 +23,14 @@
     width:150px
 }
 .formC{
-    background-color:rgb(235, 235, 73) ;
+    background-color:var(--mainColor) ;
     padding: 10px;
     height:46vh;
-    border-radius: 10px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
 }
 .labelT{
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily);
     font-size: 18px;
     margin-top: 10px;
 }
@@ -44,15 +44,18 @@
 .generateButton{
     width:150px;
     background-color: transparent;
+    border-width:0px;
+    border:1px solid black;
+    border-radius:8px;
     padding: 3px;
     margin-bottom: 20px;
     margin-top: 20px;
     border-width: 1px;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily);
     font-size: 16px;
 }
 .tableDiv{
-    border:3px solid rgb(199, 199, 33);
+    border:3px solid var(--mainColor);
     background-image:url("../../background.png"); 
   background-size: no-repeat;
   background-size:cover;
@@ -68,34 +71,46 @@
 .tableD{
     text-align: center;
     font-size: 20px;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily)
 }
 .tableData{
     border:1px solid black;
     text-align: center;
     font-size: 18px;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily)
 }
 .alottedSlots, .availableSlots{
     margin-top:15px;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily);
     font-size:20px;
 }
 .crossButton, .editButton{
     background-color: transparent;
     border-width: 0px;
     outline: none;
-    color:rgb(156, 156, 39);
+    color:var(--mainColor);
     font-size:26px
 }
 .error{
     color:red;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily)
 }
 .slotError{
     color:red;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--fontFamily);
     text-align: center;
     font-size:30px;
     margin-top: 80px;
 }
+
+/* @media (max-width:876px){
+    .tableC{
+        width:30vw;
+    }
+    .tableD{
+        font-size: 14px;
+    }
+    .tableData{
+        font-size: 14px;
+    }
+} */
